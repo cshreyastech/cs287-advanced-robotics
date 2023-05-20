@@ -1,0 +1,9 @@
+autograd
+gym
+joblib
+matplotlib
+moviepy
+numpy
+Flask==1.0.2
+plotly==3.2.0
+logger

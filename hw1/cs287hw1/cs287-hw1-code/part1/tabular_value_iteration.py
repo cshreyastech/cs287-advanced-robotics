@@ -36,14 +36,11 @@ class ValueIteration(object):
 			policy,
 			precision=1e-3,
 			log_itr=1,
-			# render_itr=2,
-			render_itr=1,
+			render_itr=2,
 			policy_type='deterministic',
-			# max_itr=50,
-			max_itr=1,
+			max_itr=50,
 			render=True,
-			# num_rollouts=20,
-			num_rollouts=1,
+			num_rollouts=20,
 			temperature=1.,
 			):
 		self.env = env
@@ -71,10 +68,7 @@ class ValueIteration(object):
 		contours = []
 		returns = []
 		fig = None
-		# print(self.transitions.shape)
-		# print(self.rewards.shape)
-
-
+		
 		while not self._stop_condition(itr, next_v, v) and itr < self.max_itr:
 			log = itr % self.log_itr == 0
 			render = (itr % self.render_itr == 0) and self.render
@@ -133,8 +127,9 @@ class ValueIteration(object):
 
 		""" INSERT YOUR CODE HERE"""
 		if self.policy_type == 'deterministic':
-			# raise NotImplementedError
-			next_v = np.full((401), 0.1)
+			q = np.multiply(self.transitions,
+				self.rewards + self.discount * self.value_fun.get_values()).sum(axis=2)
+			next_v = q.max(axis=1)
 		elif self.policy_type == 'max_ent':
 			raise NotImplementedError
 			""" Your code ends here"""
@@ -155,9 +150,14 @@ class ValueIteration(object):
 
 		"""INSERT YOUR CODE HERE"""
 		if self.policy_type == 'deterministic':
-			# raise NotImplementedError
-			# next_v = np.zeros((self.transitions.shape))
-			pi = np.full((401, 2), 0.1)
+			# Number of states, action
+			# V_*_i+1(s) = max(a) sum(s') T(s, a, s')[R(s, a, s') + gama* v_*_i(s')]
+
+			q = np.multiply(self.transitions,
+				self.rewards + self.discount * self.value_fun.get_values()).sum(axis=2)
+			pi = q.argmax(axis=1)
+			# print("pi.shape", pi.shape)
+			# pi = np.full((401, 4), 0.1)
 		elif self.policy_type == 'max_ent':
 			raise NotImplementedError
 			""" Your code ends here"""
